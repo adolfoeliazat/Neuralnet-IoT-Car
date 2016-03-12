@@ -25,9 +25,10 @@ public class PowerUpUntilPenalty extends UntypedActor {
   //determining the sequence of the track
 
   ArrayList<Combo> sequence = new ArrayList<>();
-  ArrayList<Combo> finalSeq = new ArrayList<>();
+  List<Combo> finalSeq = new ArrayList<>();
   ArrayList<Combo> time = new ArrayList<>();
   ArrayList<Combo> power = new ArrayList<>();
+  ArrayList<Character> token = new ArrayList<>();
 
   int count = 0; //count of how many turns
   int cap = 10000; // cap of how many total turns in array
@@ -99,7 +100,9 @@ public class PowerUpUntilPenalty extends UntypedActor {
       }
       return newPatternEnd;
     }
-        //recognize pattern
+
+    //either empty if no pattern found
+    // or > 1 if found
     public List<Combo> RecognizePattern(List<Combo> array, List<Combo> subarray) {
 
         if (matchesWholeArray(array, subarray)) {
@@ -153,6 +156,16 @@ public class PowerUpUntilPenalty extends UntypedActor {
         probing = false;
     }
 
+    private void updatePattern() {
+      if (sequence.size() == 1) {
+        finalSeq = sequence;
+      }
+      List<Combo> newPattern = RecognizePattern(sequence, finalSeq);
+      if (newPattern.size() > finalSeq.size()) {
+        finalSeq = newPattern;
+      }
+    }
+
     /**
      * Strategy: increase quickly when standing still to overcome haptic friction
      * then increase slowly. Probing phase will be ended by the first penalty
@@ -170,6 +183,7 @@ public class PowerUpUntilPenalty extends UntypedActor {
           turnTemp = 1;
           if (turnTemp != previousTemp) {
           sequence.add(Combo.STRAIGHT);
+          token.add('S');
           }
 
         } else if (gyrz > 500) {
@@ -177,6 +191,7 @@ public class PowerUpUntilPenalty extends UntypedActor {
           turnTemp = 2;
           if (turnTemp != previousTemp) {
           sequence.add(Combo.RIGHT);
+          token.add('R');
           }
 
 
@@ -185,12 +200,14 @@ public class PowerUpUntilPenalty extends UntypedActor {
           turnTemp = 3;
           if (turnTemp != previousTemp) {
           sequence.add(Combo.LEFT);
+          token.add('L');
           }
 
         } else {
           turn = "noise";
         }
-
+        updatePattern();
+        System.out.println("current Pattern: " + finalSeq);
         previousTemp = turnTemp;
 
         // if (cap > count) {  // if the number of cap is not yet met then add one to count
@@ -200,6 +217,7 @@ public class PowerUpUntilPenalty extends UntypedActor {
          //show ((int)gyrz);
          System.out.println(turn);
          System.out.println(sequence);
+         System.out.println(token);
 
         if (probing) {
             if (iAmStillStanding()) {
@@ -209,7 +227,8 @@ public class PowerUpUntilPenalty extends UntypedActor {
                 increase(10);
             }
         }
-
+        // List<Combo> newPattern = RecognizePattern(finalSeq, )
+        // finalSeq
         position += 1;
         kobayashi.tell(new PowerAction((int)currentPower), getSelf());
     }
