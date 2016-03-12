@@ -84,7 +84,25 @@ public class PowerUpUntilPenalty extends UntypedActor {
     private void handleSensorEvent(SensorEvent message) {
 
         double gyrz = gyrozHistory.shift(message.getG()[2]);
-         show ((int)gyrz);
+
+        String turn; // declares the turn String
+
+        // determines if the car is turning left or right
+        if (gyrz <= 10 && gyrz >= -10) {
+          turn = "start up";
+        } else if (gyrz <= 500 && gyrz >= -500) {
+          turn = "straight";
+        } else if (gyrz > 500) {
+          turn = "turn right";
+        } else if (gyrz < -1000) {
+          turn = "turn left";
+        } else {
+          turn = "noise";
+        }
+
+         //show ((int)gyrz);
+         System.out.println(turn);
+
 
         if (probing) {
             if (iAmStillStanding()) {
