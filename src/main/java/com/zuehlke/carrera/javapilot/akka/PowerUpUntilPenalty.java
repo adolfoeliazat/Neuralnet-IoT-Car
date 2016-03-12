@@ -10,6 +10,7 @@ import com.zuehlke.carrera.relayapi.messages.*;
 import com.zuehlke.carrera.timeseries.FloatingHistory;
 import org.apache.commons.lang.StringUtils;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  this logic node increases the power level by 10 units per 0.5 second until it receives a penalty
@@ -24,6 +25,9 @@ public class PowerUpUntilPenalty extends UntypedActor {
   //determining the sequence of the track
 
   ArrayList<Combo> sequence = new ArrayList<>();
+  ArrayList<Combo> finalSeq = new ArrayList<>();
+  ArrayList<Combo> time = new ArrayList<>();
+  ArrayList<Combo> power = new ArrayList<>();
 
   int count = 0; //count of how many turns
   int cap = 10000; // cap of how many total turns in array
@@ -60,8 +64,51 @@ public class PowerUpUntilPenalty extends UntypedActor {
         lastIncrease = System.currentTimeMillis();
         this.kobayashi = pilotActor;
         this.duration = duration;
-        sequence.add(Combo.STRAIGHT);
+        //sequence.add(Combo.STRAIGHT); DON'T NEED THIS!
+
     }
+
+    public boolean isPrefix(List<Combo> arr, List<Combo> prefix) {
+      int maxLength =  Math.min(arr.size(),prefix.size());
+      for (int i = 0; i < maxLength; ++i) {
+        if (prefix.get(i) != arr.get(i)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    public boolean matchesWholeArray(List<Combo> arr, List<Combo> prefix) {
+      if (arr.size() == 0) {
+        return true;
+      } else if (isPrefix(arr, prefix)) {
+        return matchesWholeArray(arr.subList(prefix.size(), arr.size()), prefix);
+      } else {
+        return false;
+      }
+    }
+
+    public int findGreaterPattern(List<Combo> array, List<Combo> previousPattern) {
+      Combo fst = previousPattern.get(0);
+      int newPatternEnd = 0;
+      for (int i = previousPattern.size(); i < array.size(); ++i) {
+        if (array.get(i) == fst) {
+          newPatternEnd = i;
+          break;
+        }
+      }
+      return newPatternEnd;
+    }
+        //recognize pattern
+    public List<Combo> RecognizePattern(List<Combo> array, List<Combo> subarray) {
+
+        if (matchesWholeArray(array, subarray)) {
+          return subarray;
+        } else {
+          return RecognizePattern(array, array.subList(0, findGreaterPattern(array, subarray)));
+        }
+    }
+
 
 
     @Override
@@ -106,8 +153,6 @@ public class PowerUpUntilPenalty extends UntypedActor {
         probing = false;
     }
 
-
-
     /**
      * Strategy: increase quickly when standing still to overcome haptic friction
      * then increase slowly. Probing phase will be ended by the first penalty
@@ -116,7 +161,6 @@ public class PowerUpUntilPenalty extends UntypedActor {
     private void handleSensorEvent(SensorEvent message) {
 
         double gyrz = gyrozHistory.shift(message.getG()[2]);
-
 
         // determines if the car is turning left or right
         if (gyrz <= 10 && gyrz >= -10) {
@@ -162,7 +206,7 @@ public class PowerUpUntilPenalty extends UntypedActor {
                 increase(0.5);
             } else if (message.getTimeStamp() > lastIncrease + duration) {
                 lastIncrease = message.getTimeStamp();
-                increase(3);
+                increase(10);
             }
         }
 
