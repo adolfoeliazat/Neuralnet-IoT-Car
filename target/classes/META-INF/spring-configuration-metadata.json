@@ -1,0 +1,29 @@
+{
+  "groups": [{
+    "name": "javapilot",
+    "type": "com.zuehlke.carrera.javapilot.config.PilotProperties",
+    "sourceType": "com.zuehlke.carrera.javapilot.config.PilotProperties"
+  }],
+  "properties": [
+    {
+      "name": "javapilot.access-code",
+      "type": "java.lang.String",
+      "sourceType": "com.zuehlke.carrera.javapilot.config.PilotProperties"
+    },
+    {
+      "name": "javapilot.name",
+      "type": "java.lang.String",
+      "sourceType": "com.zuehlke.carrera.javapilot.config.PilotProperties"
+    },
+    {
+      "name": "javapilot.rabbit-url",
+      "type": "java.lang.String",
+      "sourceType": "com.zuehlke.carrera.javapilot.config.PilotProperties"
+    },
+    {
+      "name": "javapilot.relay-url",
+      "type": "java.lang.String",
+      "sourceType": "com.zuehlke.carrera.javapilot.config.PilotProperties"
+    }
+  ]
+}
