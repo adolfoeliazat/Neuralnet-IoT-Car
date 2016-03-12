@@ -6,6 +6,7 @@ com/zuehlke/carrera/javapilot/io/RaceRecorderPlayer$SensorWT.class
 com/zuehlke/carrera/javapilot/services/SimulatorService.class
 com/zuehlke/carrera/javapilot/show/ConfirmDontLoseMessages$Consumer.class
 com/zuehlke/carrera/javapilot/io/RaceRecorderPlayer$PowerWT.class
+com/zuehlke/carrera/javapilot/akka/PowerUpUntilPenalty$Combo.class
 META-INF/spring-configuration-metadata.json
 com/zuehlke/carrera/javapilot/io/TimedPenaltyMessage.class
 com/zuehlke/carrera/javapilot/io/RaceRecorderPlayer.class
